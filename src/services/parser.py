@@ -70,9 +70,14 @@ class ParserService(IParserService):
 
     def _normalize_text(self, text: str) -> str:
         """
-        Normalize text by lowering case and removing excessive spaces and hyphens.
+        Normalize text by lowering case and removing all spaces and non-alphanumeric characters.
         """
-        return re.sub(r'[\s\-]+', ' ', text.strip().lower())
+        # Lowercase the text
+        text = text.lower()
+        # Remove all spaces and non-alphanumeric characters
+        text = re.sub(r'\s+', '', text)  # Remove all spaces
+        text = re.sub(r'[^\w]', '', text)  # Remove all non-alphanumeric characters
+        return text
 
     def _is_contain_keyword(self, text: str, keywords: List[str]) -> bool:
         """
