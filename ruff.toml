@@ -1,0 +1,23 @@
+# rules description : https://beta.ruff.rs/docs/rules/
+
+select = [
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "B",    # flake8-bugbear
+  "I001", # isort
+]
+
+ignore = [
+  "B018",  # useless-expression (Found useless expression. Either assign it to a variable or remove it.)
+  "B904",  # Within an except clause, raise exceptions with raise ... from err or raise ... from None
+]
+show-fixes = true
+line-length = 120
+extend-exclude = [
+  "migrations",
+  "__init__.py",
+  "fixtures.py"
+]
+unfixable = ["F401"]
+
+[per-file-ignores]
