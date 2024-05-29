@@ -5,6 +5,7 @@ from typing import Dict, List, Protocol
 import requests
 
 from src.intergrations.base import IApiClient
+from src.intergrations.utils import override_api_exceptions
 from src.parsers.base import IParser
 
 
@@ -40,6 +41,7 @@ class ParserService(IParserService):
         self.title_keywords = title_keywords
         self.summary_keywords = summary_keywords
 
+    @override_api_exceptions
     def fetch_data_from_api(self, path_url: str) -> bytes:
         """
         Fetches the PDF file data from the given URL.
@@ -116,6 +118,7 @@ class ParserService(IParserService):
 
 
 class GitHubParserService(ParserService):
+    @override_api_exceptions
     def fetch_data_from_api(self, path_url: str) -> bytes:
         """
         Fetches the PDF file data from the given URL.
