@@ -17,9 +17,6 @@ class PDFParser(IParser):
         return PdfReader(io.BytesIO(content))
 
     def process(self, content: bytes):
-        """
-
-        """
         try:
             reader = self._get_pdf_reader(content)
             num_pages = len(reader.pages)

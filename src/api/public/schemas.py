@@ -6,9 +6,7 @@ class GitHubCheckRequest(BaseModel):
     owner: str
     repo: str
     path: str
-    # keywords: list[str]
 
     @property
     def endpoint(self):
         return f"repos/{self.owner}/{self.repo}/contents/{self.path}"
-

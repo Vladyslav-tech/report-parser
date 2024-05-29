@@ -3,7 +3,7 @@ from src.config.parser import parser_settings
 from src.intergrations.base import ApiClient, IApiClient
 from src.parsers.base import IParser
 from src.parsers.pdf_parser import PDFParser
-from src.services.parser import GitHubParserService, IParserService, ParserService
+from src.services.parser import GitHubParserService, IParserService
 
 
 async def get_parser_service() -> IParserService:

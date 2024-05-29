@@ -35,8 +35,8 @@ class ParserService(IParserService):
                  api_client: IApiClient,
                  title_keywords: list[str],
                  summary_keywords: list[str]):
-        self.__parser = parser
-        self.__api_client = api_client
+        self._parser = parser
+        self._api_client = api_client
         self.title_keywords = title_keywords
         self.summary_keywords = summary_keywords
 
@@ -44,16 +44,8 @@ class ParserService(IParserService):
         """
         Fetches the PDF file data from the given URL.
         """
-        response = self.__api_client.get(path_url).json()
+        response = self._api_client.get(path_url).json()
         return response.content
-
-    # def fetch_data_from_api(self, path_url: str) -> bytes:
-    #     """
-    #     Fetches the PDF file data from the given URL.
-    #     """
-    #     response = self.__api_client.get(path_url).json()
-    #     download_url = response['download_url']
-    #     return requests.get(download_url).content
 
     def fetch_data_from_file(self, file_path: str) -> bytes:
         """
@@ -66,7 +58,7 @@ class ParserService(IParserService):
             raise Exception(f"Invalid file path: {file_path}")
 
     def parse_data(self, data: bytes) -> dict:
-        return self.__parser.process(data)
+        return self._parser.process(data)
 
     def _normalize_text(self, text: str) -> str:
         """
@@ -128,6 +120,6 @@ class GitHubParserService(ParserService):
         """
         Fetches the PDF file data from the given URL.
         """
-        response = self.__api_client.get(path_url).json()
+        response = self._api_client.get(path_url).json()
         download_url = response['download_url']
         return requests.get(download_url).content
