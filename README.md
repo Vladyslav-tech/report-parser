@@ -1,6 +1,6 @@
 # Report Parser Service
 
-A service for parsing and validating reports against specified criteria.
+A service for parsing and validating reports via specified criteria.
 
 ## Table of Contents
 
