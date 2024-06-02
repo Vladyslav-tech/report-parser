@@ -2,10 +2,10 @@ import os
 import re
 from typing import Dict, List, Protocol
 
-import requests
+import httpx
+from fastapi import HTTPException
 
 from src.intergrations.base import IApiClient
-from src.intergrations.utils import override_api_exceptions
 from src.parsers.base import IParser
 
 
@@ -41,13 +41,20 @@ class ParserService(IParserService):
         self.title_keywords = title_keywords
         self.summary_keywords = summary_keywords
 
-    @override_api_exceptions
-    def fetch_data_from_api(self, path_url: str) -> bytes:
+    async def fetch_data_from_api(self, path_url: str) -> bytes:
         """
         Fetches the PDF file data from the given URL.
         """
-        response = self._api_client.get(path_url).json()
-        return response.content
+        response = await self._api_client.get(path_url)
+
+        if not response.is_success:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.json()
+            )
+
+        data = response.json()
+        return data.content
 
     def fetch_data_from_file(self, file_path: str) -> bytes:
         """
@@ -64,7 +71,8 @@ class ParserService(IParserService):
 
     def _normalize_text(self, text: str) -> str:
         """
-        Normalize text by lowering case and removing all spaces and non-alphanumeric characters.
+        Normalize text by lowering case and removing all spaces
+        and non-alphanumeric characters.
         """
         # Lowercase the text
         text = text.lower()
@@ -118,11 +126,22 @@ class ParserService(IParserService):
 
 
 class GitHubParserService(ParserService):
-    @override_api_exceptions
-    def fetch_data_from_api(self, path_url: str) -> bytes:
+    async def fetch_data_from_api(self, path_url: str) -> bytes:
         """
         Fetches the PDF file data from the given URL.
         """
-        response = self._api_client.get(path_url).json()
-        download_url = response['download_url']
-        return requests.get(download_url).content
+        response = await self._api_client.get(path_url)
+
+        if not response.is_success:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.json()
+            )
+
+        data = response.json()
+        download_url = data['download_url']
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(download_url)
+
+        return response.content

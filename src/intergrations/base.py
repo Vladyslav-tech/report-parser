@@ -1,20 +1,20 @@
 from typing import Any, Dict, Protocol
 
-import requests
+import httpx
 
 
 class IApiClient(Protocol):
     """Interface for API clients."""
-    def get(self, endpoint: str, params: Dict[str, Any] | None = None) -> requests.Response:
+    async def get(self, endpoint: str, params: Dict[str, Any] | None = None) -> httpx.Response:
         raise NotImplementedError
 
-    def post(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def post(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         raise NotImplementedError
 
-    def put(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def put(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         raise NotImplementedError
 
-    def delete(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def delete(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         raise NotImplementedError
 
 
@@ -34,30 +34,34 @@ class ApiClient(IApiClient):
             self.headers['Authorization'] = f'Bearer {self.token}'
         self.base_url = f"{self.protocol}://{self.host}"
 
-    def get(self, endpoint: str, params: Dict[str, Any] | None = None) -> requests.Response:
+    async def get(self, endpoint: str, params: Dict[str, Any] | None = None) -> httpx.Response:
         """Send a GET request to the specified endpoint."""
         url = f"{self.base_url}/{endpoint}"
-        response = requests.get(url, headers=self.headers, params=params)
-        response.raise_for_status()
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+
         return response
 
-    def post(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def post(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         """Send a POST request to the specified endpoint."""
         url = f"{self.base_url}/{endpoint}"
-        response = requests.post(url, headers=self.headers, data=data)
-        response.raise_for_status()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=self.headers, data=data)
+
         return response
 
-    def put(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def put(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         """Send a PUT request to the specified endpoint."""
         url = f"{self.base_url}/{endpoint}"
-        response = requests.put(url, headers=self.headers, data=data)
-        response.raise_for_status()
+        async with httpx.AsyncClient() as client:
+            response = await client.put(url, headers=self.headers, data=data)
+
         return response
 
-    def delete(self, endpoint: str, data: dict | None = None) -> requests.Response:
+    async def delete(self, endpoint: str, data: dict | None = None) -> httpx.Response:
         """Send a DELETE request to the specified endpoint."""
         url = f"{self.base_url}/{endpoint}"
-        response = requests.delete(url, headers=self.headers, data=data)
-        response.raise_for_status()
+        async with httpx.AsyncClient() as client:
+            response = await client.delete(url, headers=self.headers)
+
         return response
